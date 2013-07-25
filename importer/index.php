@@ -3,7 +3,7 @@
 Plugin Name: Ad Importer
 Plugin URI: http://www.osclass.org/
 Description: Import ads easily from other sources.
-Version: 0.4.0
+Version: 0.5.0
 Author: Osclass
 Author URI: http://www.osclass.org/
 Short Name: ad_importer

@@ -1,6 +1,10 @@
 Changelog Ad Importer
 =====================
 
+##version 0.5.0 17/05/2013
+
+* Fix on example.xml
+
 ##version 0.4.0 17/05/2013
 
 * Security improvement
