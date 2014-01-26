@@ -196,7 +196,7 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
 
 
     foreach($image_list as $image) {
-        $tmp_name = "adimporterimage_".time();
+        $tmp_name = "adimporterimage_".microtime();
         $image_ok = osc_downloadFile($image->nodeValue, $tmp_name);
         if($image_ok) {
             $photos['error'][] = 0;
