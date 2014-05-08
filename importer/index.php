@@ -67,7 +67,6 @@ function adimporter_readxml($file) {
 function adimporter_adfromfile($file, $num_ad, $cat_info = array(), $meta_info = array()) {
     $xml = new DOMDocument();
     $xml->load($file);
-
     $listings = $xml->getElementsByTagName('listing');
     return adimporter_ad($listings->item($num_ad), $cat_info, $meta_info);
 }
@@ -78,17 +77,18 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
     $catId = @$listing->getElementsByTagName("categoryid")->item(0)->nodeValue;
 
     Params::setParam("country", @$listing->getElementsByTagName("country")->item(0)->nodeValue);
+    Params::setParam("countryId", @$listing->getElementsByTagName("countryId")->item(0)->nodeValue);
     Params::setParam("region", @$listing->getElementsByTagName("region")->item(0)->nodeValue);
     Params::setParam("city", @$listing->getElementsByTagName("city")->item(0)->nodeValue);
-    Params::setParam("cityArea", @$listing->getElementsByTagName("cityarea")->item(0)->nodeValue);
+    Params::setParam("cityArea", @$listing->getElementsByTagName("city_area")->item(0)->nodeValue);
     Params::setParam("address", @$listing->getElementsByTagName("address")->item(0)->nodeValue);
     Params::setParam("price", @$listing->getElementsByTagName("price")->item(0)->nodeValue);
     Params::setParam("currency", @$listing->getElementsByTagName("currency")->item(0)->nodeValue);
     Params::setParam("contactName", @$listing->getElementsByTagName("contactname")->item(0)->nodeValue);
     Params::setParam("contactEmail", @$listing->getElementsByTagName("contactemail")->item(0)->nodeValue);
-
     if($catId==null) {
         $cats = $listing->getElementsByTagName("category");
+
         $cat_insert = true;
         $catId = 0;
         if($cats->length>0) {
@@ -170,22 +170,22 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
         }
         $content[$lang] = $content_list->item($k)->nodeValue;
     }
-
+	$rere = array();
     $l = $custom_list->length;
     for($k = 0; $k<$l;$k++) {
         if($custom_list->item($k)->hasAttributes()) {
             $attrs = $custom_list->item($k)->attributes;
+
             foreach($attrs as $a) {
                 if($a->name=='name') {
                     $field_name = $a->value;
-                    //meta[X] = value;
                     if(isset($meta_info[$field_name])) {
-                        Params::setParam("meta[".$meta_info[$field_name]."]", $custom_list->item($k)->nodeValue);
+						$rere[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
                     } else {
                         $cfield = Field::newInstance()->findBySlug($field_name);
                         if($cfield) {
                             $meta_info[$field_name] = $cfield['pk_i_id'];
-                            Params::setParam("meta[".$cfield['pk_i_id']."]", $custom_list->item($k)->nodeValue);
+						$rere[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
                         }
                     }
                     break;
@@ -193,10 +193,12 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
             }
         }
     }
+		if (is_array($rere)){
+						Params::setParam("meta", $rere);
+		}
 
-
-    foreach($image_list as $image) {
-        $tmp_name = "adimporterimage_".microtime();
+    foreach($image_list as $k=>$image) {
+        $tmp_name = "adimporterimage_".$k.'_'.microtime();
         $image_ok = osc_downloadFile($image->nodeValue, $tmp_name);
         if($image_ok) {
             $photos['error'][] = 0;
@@ -210,6 +212,7 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
 
     Params::setParam("title", $title);
     Params::setParam("description", $content);
+
 
     $mItems->prepareData(true);
     $success = $mItems->add();

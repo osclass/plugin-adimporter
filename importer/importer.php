@@ -53,6 +53,7 @@ if(Params::getParam('plugin_action')=='done') {
 
         $("#dialog-stats").dialog({
             width: 250,
+				 height: 250,
             autoOpen: false,
             modal: true,
             title: "<?php echo osc_esc_js(__("Import completed", "adimporter")); ?>"
@@ -62,16 +63,17 @@ if(Params::getParam('plugin_action')=='done') {
             window.location = '<?php echo osc_admin_render_plugin_url(osc_plugin_folder(__FILE__)."importer.php"); ?>';
         });
 
-        parse_ad(0,'', '');
+        parse_ad(0, '', '');
     });
+
     function parse_ad(num_ad, cat_info, meta_info) {
         $("#progress").text("<?php echo osc_esc_js(__("Importing ad {NUM_AD} out of {TOTAL_ADS}", "adimporter")); ?>".replace("{NUM_AD}", (num_ad+1)).replace("{TOTAL_ADS}", total_ads));
         $.getJSON(
         "<?php echo osc_admin_base_url(true); ?>?page=ajax&action=custom&ajaxfile=<?php echo osc_plugin_folder(__FILE__);?>ajax.php&subaction=parsead",
             {"importfile" : "<?php echo $tmpfile; ?>"
             ,"num_ad" : num_ad
-            ,"cat_info" : cat_info
-            ,"meta_info" : meta_info
+            ,"cat_info" : null
+            ,"meta_info" : null
             },
             function(data){
                 if(data.error!=1 && data.error!=2) {
@@ -97,75 +99,86 @@ if(Params::getParam('plugin_action')=='done') {
     };
 </script>
 <?php }; ?>
+
 <div id="dialog-stats">
-    <div id="stats-text"></div>
-    <div class="form-actions">
-        <div class="wrapper">
-            <button class="btn btn-red close-dialog">Cancel</button>
-        </div>
+  <div id="stats-text"></div>
+  <div class="form-actions">
+    <div class="wrapper">
+      <button class="btn btn-red close-dialog">Cancel</button>
     </div>
+  </div>
 </div>
 <div id="dialog-progress" style="border: 1px solid #ccc; background: #eee; ">
+  <div>
     <div>
-        <div>
-            <div id="total_ads">
-                <?php if($num_ads>0) {
+      <div id="total_ads">
+        <?php if($num_ads>0) {
                     echo sprintf(_n('%s ad detected', '%s ads detected', $num_ads, 'adimporter'), $num_ads);
                 } else {
                     _e('No ads have been detected, nothing to do.', 'adimporter');
                 }; ?>
-            </div>
-            <div id="progress"></div>
-            <div>
-                <h3><?php _e('WARNING', 'adimporter'); ?></h3>
-                <p>
-                    <label>
-                        <?php _e('This process could take a while, DO NOT CLOSE the browser.', 'adimporter'); ?>
-                    </label>
-                </p>
-            </div>
-        </div>
+      </div>
+      <div id="progress"></div>
+      <div>
+        <h3>
+          <?php _e('WARNING', 'adimporter'); ?>
+        </h3>
+        <p>
+          <label>
+            <?php _e('This process could take a while, DO NOT CLOSE the browser.', 'adimporter'); ?>
+          </label>
+        </p>
+      </div>
     </div>
-    <div style="clear: both;"></div>
-    <div class="form-actions">
-        <div class="wrapper">
-            <button id="close-dialog-progress" class="btn btn-red close-dialog">Cancel</button>
-        </div>
+  </div>
+  <div style="clear: both;"></div>
+  <div class="form-actions">
+    <div class="wrapper">
+      <button id="close-dialog-progress" class="btn btn-red close-dialog">Cancel</button>
     </div>
+  </div>
 </div>
-
 <?php
 }
 ?>
 <div id="import_form" style="border: 1px solid #ccc; background: #eee; ">
-    <div style="padding: 20px;">
-        <div style="float: left; width: 50%;">
-            <fieldset>
-                <legend><?php _e('Ad importer', 'adimporter'); ?></legend>
-                    <form name="jobs_form" id="jobs_form" action="<?php echo osc_admin_base_url(true);?>" method="post" enctype="multipart/form-data" >
-                        <input type="hidden" name="page" value="plugins" />
-                        <input type="hidden" name="action" value="renderplugin" />
-                        <input type="hidden" name="file" value="<?php echo osc_plugin_folder(__FILE__);?>importer.php" />
-                        <input type="hidden" name="plugin_action" value="done" />
-
-                        <input type="file" name="xml" id="xml" />
-                        <label for="upload_xml"><?php _e('Upload XML', 'adimporter'); ?></label>
-                        <br/>
-
-                        <button type="submit"><?php _e('Upload', 'adimporter'); ?></button>
-                    </form>
-            </fieldset>
-        </div>
-        <div style="float: left; width: 50%;">
-            <fieldset>
-                <legend><?php _e('Help', 'adimporter'); ?></legend>
-                <p>
-                    <label>
-                        <?php _e('Some text with help. Some text with help. Some text with help. Some text with help. Some text with help. Some text with help. Some text with help. Some text with help. Some text with help. ', 'adimporter'); ?>
-                    </label>
-                </p>
-            </fieldset>
-        </div>
-        <div style="clear: both;"></div>
+  <div style="padding: 20px;">
+    <div style="float: left; width: 50%;">
+      <fieldset>
+        <legend>
+        <?php _e('Ad importer', 'adimporter'); ?>
+        </legend>
+        <form name="jobs_form" id="jobs_form" action="<?php echo osc_admin_base_url(true);?>" method="post" enctype="multipart/form-data" >
+          <input type="hidden" name="page" value="plugins" />
+          <input type="hidden" name="action" value="renderplugin" />
+          <input type="hidden" name="file" value="<?php echo osc_plugin_folder(__FILE__);?>importer.php" />
+          <input type="hidden" name="plugin_action" value="done" />
+          <input type="file" name="xml" id="xml" />
+          <label for="upload_xml">
+            <?php _e('Upload XML', 'adimporter'); ?>
+          </label>
+          <br/>
+          <button type="submit">
+          <?php _e('Upload', 'adimporter'); ?>
+          </button>
+        </form>
+      </fieldset>
     </div>
+    <div style="float: left; width: 50%;">
+      <fieldset>
+        <legend>
+        <?php _e('Help', 'adimporter'); ?>
+        </legend>
+        <p>
+          <label>
+            <?php _e('Be sure you have ALL curencies from xml added in your osclass site, if you plan to upload in parent categories make sure you have ticked the option "Allow users to select a parent category as a category when inserting or editing a listing" in settings->general. Make sure you have all countries from xml (if you add ads with diff countries).<br />
+You have a test xml there as example (example: cityarea I use it as phone field, but you can use it as u want).<br />
+If you want to add custom fields in xml see example <br />
+Custom fields must exists and must be attached to category... ', 'adimporter'); ?>
+          </label>
+        </p>
+      </fieldset>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
 </div>
