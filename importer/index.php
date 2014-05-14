@@ -3,7 +3,7 @@
 Plugin Name: Ad Importer
 Plugin URI: http://www.osclass.org/
 Description: Import ads easily from other sources.
-Version: 0.5.0
+Version: 0.6.0
 Author: Osclass
 Author URI: http://www.osclass.org/
 Short Name: ad_importer
@@ -170,7 +170,7 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
         }
         $content[$lang] = $content_list->item($k)->nodeValue;
     }
-	$rere = array();
+    $meta_array = array();
     $l = $custom_list->length;
     for($k = 0; $k<$l;$k++) {
         if($custom_list->item($k)->hasAttributes()) {
@@ -180,12 +180,12 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
                 if($a->name=='name') {
                     $field_name = $a->value;
                     if(isset($meta_info[$field_name])) {
-						$rere[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
+                        $meta_array[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
                     } else {
                         $cfield = Field::newInstance()->findBySlug($field_name);
                         if($cfield) {
                             $meta_info[$field_name] = $cfield['pk_i_id'];
-						$rere[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
+                            $meta_array[$meta_info[$field_name]] = $custom_list->item($k)->nodeValue;
                         }
                     }
                     break;
@@ -193,9 +193,9 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
             }
         }
     }
-		if (is_array($rere)){
-						Params::setParam("meta", $rere);
-		}
+    if(!empty($meta_array)){
+        Params::setParam("meta", $meta_array);
+    }
 
     foreach($image_list as $k=>$image) {
         $tmp_name = "adimporterimage_".$k.'_'.microtime();
@@ -213,20 +213,13 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
     Params::setParam("title", $title);
     Params::setParam("description", $content);
 
+    //Params::_view();
 
     $mItems->prepareData(true);
     $success = $mItems->add();
     return array($success, $cat_info, $meta_info);
 }
 
-
-
-// This is needed in order to be able to activate the plugin
 osc_register_plugin(osc_plugin_path(__FILE__), '');
-// This is a hack to show a Uninstall link at plugins table (you could also use some other hook to show a custom option panel)
 osc_add_hook(osc_plugin_path(__FILE__)."_uninstall", '');
-
-
 osc_add_hook('admin_header','adimporter_admin_menu');
-
-?>

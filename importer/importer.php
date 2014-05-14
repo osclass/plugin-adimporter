@@ -37,23 +37,23 @@ if(Params::getParam('plugin_action')=='done') {
     }
 
     if($num_ads>0) {
-?>
+?>  
 <script type="text/javascript">
     var errors = new Array();
     var total_ads = <?php echo $num_ads; ?>;
     $(document).ready(function(){
 
         $("#dialog-progress").dialog({
-            width: 350,
-            height: 250,
+            width: 550,
+            height: 450,
             autoOpen: true,
             modal: true,
             title: "<?php echo osc_esc_js(__("Import in progress", "adimporter")); ?>"
         });
 
         $("#dialog-stats").dialog({
-            width: 250,
-				 height: 250,
+            width: 550,
+            height: 450,
             autoOpen: false,
             modal: true,
             title: "<?php echo osc_esc_js(__("Import completed", "adimporter")); ?>"
@@ -72,8 +72,8 @@ if(Params::getParam('plugin_action')=='done') {
         "<?php echo osc_admin_base_url(true); ?>?page=ajax&action=custom&ajaxfile=<?php echo osc_plugin_folder(__FILE__);?>ajax.php&subaction=parsead",
             {"importfile" : "<?php echo $tmpfile; ?>"
             ,"num_ad" : num_ad
-            ,"cat_info" : null
-            ,"meta_info" : null
+            ,"cat_info" : cat_info
+            ,"meta_info" : meta_info
             },
             function(data){
                 if(data.error!=1 && data.error!=2) {

@@ -1,7 +1,5 @@
 <?php if (!defined('OC_ADMIN') || OC_ADMIN!==true) exit('Access is not allowed.');
-
 switch(Params::getParam("subaction")) {
-
     case 'parsead':
         $num_ad = Params::getParam("num_ad");
         $file = Params::getParam("importfile");
@@ -25,6 +23,3 @@ switch(Params::getParam("subaction")) {
         echo json_encode(array('error' => 1, 'msg' => __('No action defined', 'adimporter')));
         break;
 }
-
-
-?>
