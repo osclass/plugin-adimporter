@@ -86,6 +86,7 @@ function adimporter_ad($listing, $cat_info, $meta_info) {
     Params::setParam("currency", @$listing->getElementsByTagName("currency")->item(0)->nodeValue);
     Params::setParam("contactName", @$listing->getElementsByTagName("contactname")->item(0)->nodeValue);
     Params::setParam("contactEmail", @$listing->getElementsByTagName("contactemail")->item(0)->nodeValue);
+    Params::setParam("dt_expiration", @$listing->getElementsByTagName("dt_expiration")->item(0)->nodeValue);
     if($catId==null) {
         $cats = $listing->getElementsByTagName("category");
 
